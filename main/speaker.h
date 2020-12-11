@@ -4,6 +4,19 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#define SOUND_BEEP  100
+#define SOUND_TONE  200
+#define SOUND_ALARM 300
+#define SOUND_MUTE  400
+#define SOUND_HALT  900
+
+typedef struct {
+	uint16_t command;
+	char tone[64];
+	uint16_t alarm;
+	TaskHandle_t taskHandle;
+} SOUND_t;
+
 typedef struct {
 	uint32_t _count;
 	uint8_t _volume;
@@ -41,21 +54,21 @@ typedef struct {
 #define TONE_PIN_CHANNEL 0
 #define SPEAKER_PIN 25
 
-void SPEAKER_begin(SPEAKER_t * dev);
-void SPEAKER_end(SPEAKER_t * dev);
-void SPEAKER_tone(SPEAKER_t * dev, uint16_t frequency);
-void SPEAKER_tone_duration(SPEAKER_t * dev, uint16_t frequency, uint32_t duration);
-void SPEAKER_beep(SPEAKER_t * dev);
-void SPEAKER_beep_forever(SPEAKER_t * dev);
-void SPEAKER_setBeep(SPEAKER_t * dev, uint16_t frequency, uint16_t duration);
-void SPEAKER_setVolume(SPEAKER_t * dev, uint8_t volume);
-void SPEAKER_mute(SPEAKER_t * dev);
-bool SPEAKER_update(SPEAKER_t * dev);
-bool SPEAKER_status(SPEAKER_t * dev);
+void speaker_begin(SPEAKER_t * dev);
+void speaker_end(SPEAKER_t * dev);
+void speaker_tone(SPEAKER_t * dev, uint16_t frequency);
+void speaker_tone_duration(SPEAKER_t * dev, uint16_t frequency, uint32_t duration);
+void speaker_beep(SPEAKER_t * dev);
+void speaker_beep_forever(SPEAKER_t * dev);
+void speaker_setBeep(SPEAKER_t * dev, uint16_t frequency, uint16_t duration);
+void speaker_mute(SPEAKER_t * dev);
+bool speaker_update(SPEAKER_t * dev);
+bool speaker_status(SPEAKER_t * dev);
 
 #if 0
-void SPEAKER_write(SPEAKER_t * dev, uint8_t value);
-void SPEAKER_playMusic(SPEAKER_t * dev, const uint8_t *music_data, uint16_t sample_rate);
+void speaker_setVolume(SPEAKER_t * dev, uint8_t volume);
+void speaker_write(SPEAKER_t * dev, uint8_t value);
+void speaker_playMusic(SPEAKER_t * dev, const uint8_t *music_data, uint16_t sample_rate);
 #endif
 
 #endif

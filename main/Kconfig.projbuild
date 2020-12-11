@@ -1,15 +1,27 @@
 menu "Application Configuration"
 
-    choice ESP_FONT
-        bool "Select font"
-        default ESP_FONT_GOTHIC
-        help
-            Select font.
+	config BEEP_FREQUENCY
+		int "BEEP frequency"
+		default 1000
+		help
+			Set the BEEP frequency.
 
-        config ESP_FONT_GOTHIC
-            bool "Gothic"
-        config ESP_FONT_MINCYO
-            bool "Mincyo"
-    endchoice
+	config BEEP_DURATION
+		int "BEEP duration"
+		default 100
+		help
+			Set the BEEP duration.
+
+	choice ESP_FONT
+		bool "Select font"
+		default ESP_FONT_GOTHIC
+		help
+			Select font.
+
+		config ESP_FONT_GOTHIC
+			bool "Gothic"
+		config ESP_FONT_MINCYO
+			bool "Mincyo"
+	endchoice
 
 endmenu

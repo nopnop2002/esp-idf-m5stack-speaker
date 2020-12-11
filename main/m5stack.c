@@ -11,7 +11,6 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "freertos/queue.h"
-#include "freertos/ringbuf.h"
 #include "esp_err.h"
 #include "esp_log.h"
 #include "driver/gpio.h"
@@ -34,7 +33,7 @@
 #define GPIO_INPUT_C	GPIO_NUM_37
 
 extern QueueHandle_t xQueueCmd;
-extern RingbufHandle_t xRingbuffer;
+extern QueueHandle_t xQueueSound;
 
 // Left Button Monitoring
 void buttonA(void *pvParameters)
@@ -188,68 +187,51 @@ void tft(void *pvParameters)
 	strcpy((char *)ascii, "Middle button play Doremi.");
 	lcdDrawString(&dev, fx, 0, ypos, ascii, YELLOW);
 	ypos = (fontHeight*7)-1;
-	strcpy((char *)ascii, "Right button start buzzer.");
+	strcpy((char *)ascii, "Right button start alarm.");
 	lcdDrawString(&dev, fx, 0, ypos, ascii, YELLOW);
 	ypos = (fontHeight*8)-1;
 	strcpy((char *)ascii, "Stops when pressed again.");
 	lcdDrawString(&dev, fx, 0, ypos, ascii, YELLOW);
 
-	// Start speaker
-	SPEAKER_t speaker;
-	SPEAKER_begin(&speaker);
-
-	// Doremi
-	uint16_t frequency[8];
-	frequency[0] = NOTE_D1; //Do
-	frequency[1] = NOTE_D2; //Re
-	frequency[2] = NOTE_D3; //Mi
-	frequency[3] = NOTE_D4; //Fa
-	frequency[4] = NOTE_D5; //Sol
-	frequency[5] = NOTE_D6; //La
-	frequency[6] = NOTE_D7; //Si
-	frequency[7] = NOTE_DH1;//Do
-
 	CMD_t cmdBuf;
-
+	SOUND_t soundBuf;
+	soundBuf.taskHandle = xTaskGetCurrentTaskHandle();
+	int alarmType = 0;
+	bool alarmStatus = false;
 
 	while(1) {
 		xQueueReceive(xQueueCmd, &cmdBuf, portMAX_DELAY);
 		ESP_LOGI(pcTaskGetTaskName(0),"cmdBuf.command=%d", cmdBuf.command);
 		if (cmdBuf.command == CMD_LEFT) {
 			ESP_LOGI(pcTaskGetTaskName(0),"LEFT Button");
-			if (SPEAKER_status(&speaker)) {
-				SPEAKER_mute(&speaker);
-			}
-			SPEAKER_beep(&speaker);
-			while(1) {
-				if (SPEAKER_update(&speaker)) break;
-			}
+			soundBuf.command = SOUND_BEEP;
+			xQueueSend(xQueueSound, &soundBuf, 0);
 
 		} else if (cmdBuf.command == CMD_LONG_LEFT) {
 			ESP_LOGI(pcTaskGetTaskName(0),"LONG LEFT Button");
 
 		} else if (cmdBuf.command == CMD_MIDDLE) {
 			ESP_LOGI(pcTaskGetTaskName(0),"MIDDLE Button");
-			if (SPEAKER_status(&speaker)) {
-				SPEAKER_mute(&speaker);
-			}
-			for (int i=0;i<8;i++) {
-				SPEAKER_tone_duration(&speaker, frequency[i], 200);
-				while(1) {
-					if (SPEAKER_update(&speaker)) break;
-				}
-			}
+			soundBuf.command = SOUND_TONE;
+			strcpy(soundBuf.tone, "C2D2E2F2G2A2B2c2");
+			xQueueSend(xQueueSound, &soundBuf, 0);
 
 		} else if (cmdBuf.command == CMD_LONG_MIDDLE) {
 			ESP_LOGI(pcTaskGetTaskName(0),"LONG MIDDLE Button");
 
 		} else if (cmdBuf.command == CMD_RIGHT) {
 			ESP_LOGI(pcTaskGetTaskName(0),"RIGHT Button");
-			if (SPEAKER_status(&speaker)) {
-				SPEAKER_mute(&speaker);
+			if (alarmStatus) {
+				soundBuf.command = SOUND_MUTE;
+				alarmStatus = false;
 			} else {
-				SPEAKER_beep_forever(&speaker);
+				soundBuf.command = SOUND_ALARM;
+				soundBuf.alarm = alarmType;
+				alarmStatus = true;
+				alarmType++;
+				if (alarmType == 4) alarmType = 0;
 			}
+			xQueueSend(xQueueSound, &soundBuf, 0);
 
 		} else if (cmdBuf.command == CMD_LONG_RIGHT) {
 			ESP_LOGI(pcTaskGetTaskName(0),"LONG RIGHT Button");

@@ -15,8 +15,10 @@
 #include "esp_log.h"
 
 #include "cmd.h"
+#include "speaker.h"
 
 QueueHandle_t xQueueCmd;
+QueueHandle_t xQueueSound;
 
 static const char *TAG = "MAIN";
 
@@ -71,6 +73,7 @@ void buttonA(void *pvParameters);
 void buttonB(void *pvParameters);
 void buttonC(void *pvParameters);
 void tft(void *pvParameters);
+void speaker(void *pvParameters);
 
 void app_main(void)
 {
@@ -95,10 +98,13 @@ void app_main(void)
 	// Create Queue
 	xQueueCmd = xQueueCreate( 10, sizeof(CMD_t) );
 	configASSERT( xQueueCmd );
+	xQueueSound = xQueueCreate( 1, sizeof(SOUND_t) );
+	configASSERT( xQueueSound );
 
 	// Create Task
 	xTaskCreate(buttonA, "BUTTON1", 1024*2, NULL, 2, NULL);
 	xTaskCreate(buttonB, "BUTTON2", 1024*2, NULL, 2, NULL);
 	xTaskCreate(buttonC, "BUTTON3", 1024*2, NULL, 2, NULL);
 	xTaskCreate(tft, "TFT", 1024*8, NULL, 5, NULL);
+	xTaskCreate(speaker, "SPEAKER", 1024*4, NULL, 5, NULL);
 }
