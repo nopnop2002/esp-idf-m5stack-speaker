@@ -1,0 +1,15 @@
+menu "Application Configuration"
+
+    choice ESP_FONT
+        bool "Select font"
+        default ESP_FONT_GOTHIC
+        help
+            Select font.
+
+        config ESP_FONT_GOTHIC
+            bool "Gothic"
+        config ESP_FONT_MINCYO
+            bool "Mincyo"
+    endchoice
+
+endmenu
