@@ -186,9 +186,9 @@ void speaker(void *pvParameters)
 			if (soundBuf.alarm == 0) {
 				strcpy(tone, "C808");
 			} else if (soundBuf.alarm == 1) {
-				strcpy(tone, "C101C608");
+				strcpy(tone, "E101E608");
 			} else if (soundBuf.alarm == 2) {
-				strcpy(tone, "C101C101C408");
+				strcpy(tone, "G101G101G408");
 			} else if (soundBuf.alarm == 3) {
 				strcpy(tone, "C8c8");
 			}
