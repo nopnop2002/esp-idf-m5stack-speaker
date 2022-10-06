@@ -32,7 +32,7 @@
 #else
 #define LEDC_MUTEX_LOCK()	 do {} while (xSemaphoreTake(_ledc_sys_lock, portMAX_DELAY) != pdPASS)
 #define LEDC_MUTEX_UNLOCK()  xSemaphoreGive(_ledc_sys_lock)
-xSemaphoreHandle _ledc_sys_lock = NULL;
+SemaphoreHandle_t _ledc_sys_lock = NULL;
 #endif
 
 /*
@@ -58,7 +58,7 @@ xSemaphoreHandle _ledc_sys_lock = NULL;
 #define LEDC_TIMER(g,t) LEDC.timer_group[(g)].timer[(t)]
 
 static apb_change_t * apb_change_callbacks = NULL;
-static xSemaphoreHandle apb_change_lock = NULL;
+static SemaphoreHandle_t apb_change_lock = NULL;
 
 //typedef void (* apb_change_cb_t)(void * arg, apb_change_ev_t ev_type, uint32_t old_apb, uint32_t new_apb);
 
@@ -347,7 +347,7 @@ void ledcAttachPin(uint8_t pin, uint8_t chan)
 		return;
 	}
 	//pinMode(pin, OUTPUT);
-	gpio_pad_select_gpio(pin);
+	gpio_reset_pin(pin);
 	gpio_set_direction(pin, GPIO_MODE_OUTPUT);
 	gpio_set_level(pin, 0);
 	pinMatrixOutAttach(pin, ((chan/8)?LEDC_LS_SIG_OUT0_IDX:LEDC_HS_SIG_OUT0_IDX) + (chan%8), false, false);

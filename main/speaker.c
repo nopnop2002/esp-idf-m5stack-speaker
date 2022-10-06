@@ -14,7 +14,7 @@ extern QueueHandle_t xQueueSound;
 static const char *TAG = "SPEAKER";
 
 unsigned long millis(){
-  return xTaskGetTickCount() * portTICK_RATE_MS;
+  return xTaskGetTickCount() * portTICK_PERIOD_MS;
 }
 
 void speaker_begin(SPEAKER_t * dev) {
@@ -157,7 +157,7 @@ void speaker(void *pvParameters)
 
 	while(1) {
 		xQueueReceive(xQueueSound, &soundBuf, portMAX_DELAY);
-		ESP_LOGI(pcTaskGetTaskName(0),"soundBuf.command=%d", soundBuf.command);
+		ESP_LOGI(pcTaskGetName(0),"soundBuf.command=%d", soundBuf.command);
 		if (soundBuf.command == SOUND_BEEP) {
 			if (speaker_status(&speaker)) {
 				speaker_mute(&speaker);

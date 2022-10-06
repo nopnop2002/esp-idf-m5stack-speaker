@@ -38,19 +38,19 @@ extern QueueHandle_t xQueueSound;
 // Left Button Monitoring
 void buttonA(void *pvParameters)
 {
-	ESP_LOGI(pcTaskGetTaskName(0), "Start");
+	ESP_LOGI(pcTaskGetName(0), "Start");
 	CMD_t cmdBuf;
 	//cmdBuf.command = CMD_LEFT;
 	cmdBuf.taskHandle = xTaskGetCurrentTaskHandle();
 
 	// set the GPIO as a input
-	gpio_pad_select_gpio(GPIO_INPUT_A);
+	gpio_reset_pin(GPIO_INPUT_A);
 	gpio_set_direction(GPIO_INPUT_A, GPIO_MODE_DEF_INPUT);
 
 	while(1) {
 		int level = gpio_get_level(GPIO_INPUT_A);
 		if (level == 0) {
-			ESP_LOGI(pcTaskGetTaskName(0), "Push Button");
+			ESP_LOGI(pcTaskGetName(0), "Push Button");
 			TickType_t startTick = xTaskGetTickCount();
 			while(1) {
 				level = gpio_get_level(GPIO_INPUT_A);
@@ -70,19 +70,19 @@ void buttonA(void *pvParameters)
 // Middle Button Monitoring
 void buttonB(void *pvParameters)
 {
-	ESP_LOGI(pcTaskGetTaskName(0), "Start");
+	ESP_LOGI(pcTaskGetName(0), "Start");
 	CMD_t cmdBuf;
 	//cmdBuf.command = CMD_MIDDLE;
 	cmdBuf.taskHandle = xTaskGetCurrentTaskHandle();
 
 	// set the GPIO as a input
-	gpio_pad_select_gpio(GPIO_INPUT_B);
+	gpio_reset_pin(GPIO_INPUT_B);
 	gpio_set_direction(GPIO_INPUT_B, GPIO_MODE_DEF_INPUT);
 
 	while(1) {
 		int level = gpio_get_level(GPIO_INPUT_B);
 		if (level == 0) {
-			ESP_LOGI(pcTaskGetTaskName(0), "Push Button");
+			ESP_LOGI(pcTaskGetName(0), "Push Button");
 			TickType_t startTick = xTaskGetTickCount();
 			while(1) {
 				level = gpio_get_level(GPIO_INPUT_B);
@@ -102,19 +102,19 @@ void buttonB(void *pvParameters)
 // Right Button Monitoring
 void buttonC(void *pvParameters)
 {
-	ESP_LOGI(pcTaskGetTaskName(0), "Start");
+	ESP_LOGI(pcTaskGetName(0), "Start");
 	CMD_t cmdBuf;
 	//cmdBuf.command = CMD_RIGHT;
 	cmdBuf.taskHandle = xTaskGetCurrentTaskHandle();
 
 	// set the GPIO as a input
-	gpio_pad_select_gpio(GPIO_INPUT_C);
+	gpio_reset_pin(GPIO_INPUT_C);
 	gpio_set_direction(GPIO_INPUT_C, GPIO_MODE_DEF_INPUT);
 
 	while(1) {
 		int level = gpio_get_level(GPIO_INPUT_C);
 		if (level == 0) {
-			ESP_LOGI(pcTaskGetTaskName(0), "Push Button");
+			ESP_LOGI(pcTaskGetName(0), "Push Button");
 			TickType_t startTick = xTaskGetTickCount();
 			while(1) {
 				level = gpio_get_level(GPIO_INPUT_C);
@@ -136,7 +136,7 @@ void buttonC(void *pvParameters)
 
 void tft(void *pvParameters)
 {
-	ESP_LOGI(pcTaskGetTaskName(0), "Start");
+	ESP_LOGI(pcTaskGetName(0), "Start");
 
 	// Set font file
 	FontxFile fx[2];
@@ -152,19 +152,19 @@ void tft(void *pvParameters)
 	uint8_t fontWidth;
 	uint8_t fontHeight;
 	GetFontx(fx, 0, buffer, &fontWidth, &fontHeight);
-	ESP_LOGI(pcTaskGetTaskName(0), "fontWidth=%d fontHeight=%d",fontWidth,fontHeight);
+	ESP_LOGI(pcTaskGetName(0), "fontWidth=%d fontHeight=%d",fontWidth,fontHeight);
 
 	// Setup Screen
 	TFT_t dev;
 	spi_master_init(&dev, CS_GPIO, DC_GPIO, RESET_GPIO, BL_GPIO);
 	lcdInit(&dev, 0x9341, SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0);
-	ESP_LOGI(pcTaskGetTaskName(0), "Setup Screen done");
+	ESP_LOGI(pcTaskGetName(0), "Setup Screen done");
 
 #if 0
 	int lines = (SCREEN_HEIGHT - fontHeight) / fontHeight;
-	ESP_LOGD(pcTaskGetTaskName(0), "SCREEN_HEIGHT=%d fontHeight=%d lines=%d", SCREEN_HEIGHT, fontHeight, lines);
+	ESP_LOGD(pcTaskGetName(0), "SCREEN_HEIGHT=%d fontHeight=%d lines=%d", SCREEN_HEIGHT, fontHeight, lines);
 	int ymax = (lines+1) * fontHeight;
-	ESP_LOGD(pcTaskGetTaskName(0), "ymax=%d",ymax);
+	ESP_LOGD(pcTaskGetName(0), "ymax=%d",ymax);
 #endif
 
 	// Clear Screen
@@ -201,26 +201,26 @@ void tft(void *pvParameters)
 
 	while(1) {
 		xQueueReceive(xQueueCmd, &cmdBuf, portMAX_DELAY);
-		ESP_LOGI(pcTaskGetTaskName(0),"cmdBuf.command=%d", cmdBuf.command);
+		ESP_LOGI(pcTaskGetName(0),"cmdBuf.command=%d", cmdBuf.command);
 		if (cmdBuf.command == CMD_LEFT) {
-			ESP_LOGI(pcTaskGetTaskName(0),"LEFT Button");
+			ESP_LOGI(pcTaskGetName(0),"LEFT Button");
 			soundBuf.command = SOUND_BEEP;
 			xQueueSend(xQueueSound, &soundBuf, 0);
 
 		} else if (cmdBuf.command == CMD_LONG_LEFT) {
-			ESP_LOGI(pcTaskGetTaskName(0),"LONG LEFT Button");
+			ESP_LOGI(pcTaskGetName(0),"LONG LEFT Button");
 
 		} else if (cmdBuf.command == CMD_MIDDLE) {
-			ESP_LOGI(pcTaskGetTaskName(0),"MIDDLE Button");
+			ESP_LOGI(pcTaskGetName(0),"MIDDLE Button");
 			soundBuf.command = SOUND_TONE;
 			strcpy(soundBuf.tone, "C2D2E2F2G2A2B2c2");
 			xQueueSend(xQueueSound, &soundBuf, 0);
 
 		} else if (cmdBuf.command == CMD_LONG_MIDDLE) {
-			ESP_LOGI(pcTaskGetTaskName(0),"LONG MIDDLE Button");
+			ESP_LOGI(pcTaskGetName(0),"LONG MIDDLE Button");
 
 		} else if (cmdBuf.command == CMD_RIGHT) {
-			ESP_LOGI(pcTaskGetTaskName(0),"RIGHT Button");
+			ESP_LOGI(pcTaskGetName(0),"RIGHT Button");
 			if (alarmStatus) {
 				soundBuf.command = SOUND_MUTE;
 				alarmStatus = false;
@@ -234,7 +234,7 @@ void tft(void *pvParameters)
 			xQueueSend(xQueueSound, &soundBuf, 0);
 
 		} else if (cmdBuf.command == CMD_LONG_RIGHT) {
-			ESP_LOGI(pcTaskGetTaskName(0),"LONG RIGHT Button");
+			ESP_LOGI(pcTaskGetName(0),"LONG RIGHT Button");
 
 		}
 	}
