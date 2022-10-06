@@ -28,8 +28,8 @@ M5Stack
 ```
 git clone https://github.com/nopnop2002/esp-idf-m5stack-speaker
 cd esp-idf-m5stack-speaker
-make menuconfig
-make flash monitor
+idf.py menuconfig
+idf.py flash monitor
 ```
 
 # Firmware configuration
