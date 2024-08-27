@@ -1,4 +1,5 @@
 #include <string.h>
+#include <inttypes.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "freertos/queue.h"
@@ -135,7 +136,7 @@ size_t makeTone(char * tone, size_t length, uint16_t * frequency, uint32_t * dur
 		c2[1] = 0;
 		int d2 = atoi(c2);
 		duration[i] = d2 * 100;
-		ESP_LOGD(TAG, "c2=%s d2=%d duration[i]=%u", c2, d2, duration[i]);
+		ESP_LOGD(TAG, "c2=%s d2=%d duration[i]=%"PRIu32, c2, d2, duration[i]);
 	}
 	return (length/2);
 		
